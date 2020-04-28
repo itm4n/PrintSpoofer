@@ -1,0 +1,128 @@
+// https://github.com/leechristensen/SpoolSample/blob/master/MS-RPRN/ms-rprn.idl
+// [MS-RPRN] interface
+[
+	uuid(12345678-1234-ABCD-EF00-0123456789AB),
+	version(1.0),
+	ms_union,
+	endpoint("ncacn_np:[\\pipe\\spoolss]"),
+	pointer_default(unique)
+]
+
+interface winspool {
+
+	import "oaidl.idl";
+
+#if __midl < 700
+#define disable_consistency_check
+#endif
+	// [MS-RPRN] common info container structures
+	typedef struct _DEVMODE_CONTAINER {
+		DWORD cbBuf;
+		[size_is(cbBuf), unique] BYTE* pDevMode;
+	} DEVMODE_CONTAINER;
+
+	typedef struct _RPC_V2_NOTIFY_OPTIONS_TYPE {
+		unsigned short Type;
+		unsigned short Reserved0;
+		DWORD Reserved1;
+		DWORD Reserved2;
+		DWORD Count;
+		[size_is(Count), unique] unsigned short* pFields;
+	} RPC_V2_NOTIFY_OPTIONS_TYPE;
+
+	typedef struct _RPC_V2_NOTIFY_OPTIONS {
+		DWORD Version;
+		DWORD Reserved;
+		DWORD Count;
+		[size_is(Count), unique] RPC_V2_NOTIFY_OPTIONS_TYPE* pTypes;
+	} RPC_V2_NOTIFY_OPTIONS;
+
+	// [MS-RPRN] common data types
+	typedef unsigned short LANGID;
+	typedef [context_handle] void* GDI_HANDLE;
+	typedef [context_handle] void* PRINTER_HANDLE;
+	typedef [handle] wchar_t* STRING_HANDLE;
+
+	// [MS-RPRN] methods
+	DWORD RpcEnumPrinters();
+	DWORD RpcOpenPrinter(
+		[in, string, unique] STRING_HANDLE pPrinterName,
+		[out] PRINTER_HANDLE* pHandle,
+		[in, string, unique] wchar_t* pDatatype,
+		[in] DEVMODE_CONTAINER* pDevModeContainer,
+		[in] DWORD AccessRequired
+	);
+	DWORD RpcSetJob();
+	DWORD RpcGetJob();
+	DWORD RpcEnumJobs();
+	DWORD RpcAddPrinter();
+	DWORD RpcDeletePrinter();
+	DWORD RpcSetPrinter();
+	DWORD RpcGetPrinter();
+	DWORD RpcAddPrinterDriver();
+	DWORD RpcEnumPrinterDrivers();
+	DWORD RpcGetPrinterDriver();
+	DWORD RpcGetPrinterDriverDirectory();
+	DWORD RpcDeletePrinterDriver();
+	DWORD RpcAddPrintProcessor();
+	DWORD RpcEnumPrintProcessors();
+	DWORD RpcGetPrintProcessorDirectory();
+	DWORD RpcStartDocPrinter();
+	DWORD RpcStartPagePrinter();
+	DWORD RpcWritePrinter();
+	DWORD RpcEndPagePrinter();
+	DWORD RpcAbortPrinter();
+	DWORD RpcReadPrinter();
+	DWORD RpcEndDocPrinter();
+	DWORD RpcAddJob();
+	DWORD RpcScheduleJob();
+	DWORD RpcGetPrinterData();
+	DWORD RpcSetPrinterData();
+	DWORD RpcWaitForPrinterChange();
+	DWORD RpcClosePrinter(
+		[in, out] PRINTER_HANDLE* phPrinter
+	);
+	DWORD RpcAddForm();
+	DWORD RpcDeleteForm();
+	DWORD RpcGetForm();
+	DWORD RpcSetForm();
+	DWORD RpcEnumForms();
+	DWORD RpcEnumPorts();
+	DWORD RpcEnumMonitors();
+	void Opnum37NotUsedOnWire();
+	void Opnum38NotUsedOnWire();
+	DWORD RpcDeletePort();
+	DWORD RpcCreatePrinterIC();
+	DWORD RpcPlayGdiScriptOnPrinterIC();
+	DWORD RpcDeletePrinterIC();
+	void Opnum43NotUsedOnWire();
+	void Opnum44NotUsedOnWire();
+	void Opnum45NotUsedOnWire();
+	DWORD RpcAddMonitor();
+	DWORD RpcDeleteMonitor();
+	DWORD RpcDeletePrintProcessor();
+	void Opnum49NotUsedOnWire();
+	void Opnum50NotUsedOnWire();
+	DWORD RpcEnumPrintProcessorDatatypes();
+	DWORD RpcResetPrinter();
+	DWORD RpcGetPrinterDriver2();
+	void Opnum54NotUsedOnWire();
+	void Opnum55NotUsedOnWire();
+	DWORD RpcFindClosePrinterChangeNotification();
+	void Opnum57NotUsedOnWire();
+	DWORD RpcReplyOpenPrinter();
+	DWORD RpcRouterReplyPrinter();
+	DWORD RpcReplyClosePrinter();
+	DWORD RpcAddPortEx();
+	DWORD RpcRemoteFindFirstPrinterChangeNotification();
+	void Opnum63NotUsedOnWire();
+	void Opnum64NotUsedOnWire();
+	DWORD RpcRemoteFindFirstPrinterChangeNotificationEx(
+		[in] PRINTER_HANDLE hPrinter,
+		[in] DWORD fdwFlags,
+		[in] DWORD fdwOptions,
+		[in, string, unique] wchar_t* pszLocalMachine,
+		[in] DWORD dwPrinterLocal,
+		[in, unique] RPC_V2_NOTIFY_OPTIONS* pOptions
+	);
+}
