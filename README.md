@@ -2,6 +2,8 @@
 
 From LOCAL/NETWORK SERVICE to SYSTEM by abusing `SeImpersonatePrivilege` on Windows 10 and Server 2016/2019.
 
+:information_source: If you want to know how this works, please check out this detailed blog post: [https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/](http://127.0.0.1:4000/printspoofer-abusing-impersonate-privileges/).
+
 <p align="center">
   <img src="demo.gif">
 </p>
