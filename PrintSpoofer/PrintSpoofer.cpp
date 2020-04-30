@@ -89,7 +89,7 @@ VOID PrintUsage()
 		"  -i          Interact with the new process in the current console (default is non-interactive)\n"
 		"  -d          Spawn a new process on the currently active desktop\n"
 		"  -h          That's me :)\n"
-		"\n"
+		"\n"	
 	);
 
 	wprintf(
@@ -463,8 +463,9 @@ BOOL GetSystem(HANDLE hPipe)
 
 	if (g_bInteractWithDesktop)
 	{
-		DWORD sessionId = WTSGetActiveConsoleSessionId();
-		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &sessionId, sizeof(DWORD)))
+		DWORD dwSessionId = WTSGetActiveConsoleSessionId();
+
+		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &dwSessionId, sizeof(DWORD)))
 		{
 			wprintf(L"SetTokenInformation() failed. Error: %d\n", GetLastError());
 			goto cleanup;
