@@ -476,11 +476,8 @@ BOOL GetSystem(HANDLE hPipe)
 		goto cleanup;
 	}
 
-	//if (g_bInteractWithDesktop)
 	if (g_dwSessionId)
 	{
-		//DWORD dwSessionId = WTSGetActiveConsoleSessionId();
-
 		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &g_dwSessionId, sizeof(DWORD)))
 		{
 			wprintf(L"SetTokenInformation() failed. Error: %d\n", GetLastError());
