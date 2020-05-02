@@ -470,11 +470,11 @@ BOOL GetSystem(HANDLE hPipe)
 		goto cleanup;
 	}
 
-	if (!CheckAndEnablePrivilege(hSystemToken, SE_ASSIGNPRIMARYTOKEN_NAME))
-	{
-		wprintf(L"A privilege is missing: %ws\n", SE_ASSIGNPRIMARYTOKEN_NAME);
-		goto cleanup;
-	}
+	//if (!CheckAndEnablePrivilege(hSystemToken, SE_ASSIGNPRIMARYTOKEN_NAME))
+	//{
+	//	wprintf(L"A privilege is missing: %ws\n", SE_ASSIGNPRIMARYTOKEN_NAME);
+	//	goto cleanup;
+	//}
 
 	if (g_dwSessionId)
 	{
